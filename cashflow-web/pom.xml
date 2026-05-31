@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>cashflow</groupId>
+    <artifactId>cashflow-web</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+    <name>CashFlow Web</name>
+    <description>Aplikasi manajemen keuangan – Spring Boot + React (monorepo)</description>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         Spring Boot Parent
+         ═══════════════════════════════════════════════════════════════════════ -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.0</version>
+    </parent>
+
+    <properties>
+        <java.version>21</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Direktori frontend, relatif terhadap root pom.xml -->
+        <frontend.dir>${project.basedir}/frontend</frontend.dir>
+    </properties>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         Dependencies
+         ═══════════════════════════════════════════════════════════════════════ -->
+    <dependencies>
+
+        <!-- Spring Boot Web (Tomcat dengan HTTP/2) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Spring Security (JWT auth) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- Spring Data JPA -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!-- Bean Validation -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- H2 Database -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- JWT (jjwt 0.12.x) -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.12.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.12.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.12.5</version>
+        </dependency>
+
+
+        <!-- Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         Build
+         ═══════════════════════════════════════════════════════════════════════ -->
+    <build>
+        <plugins>
+
+            <!-- 1. Spring Boot Maven Plugin -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <!-- 2. Frontend Maven Plugin
+                 - Menjalankan `npm install` lalu `npm run build` di folder ./frontend
+                 - Hasil build (dist/) kemudian disalin ke src/main/resources/static
+                   agar Spring Boot serve-nya secara otomatis -->
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.15.0</version>
+                <configuration>
+                    <workingDirectory>${frontend.dir}</workingDirectory>
+                    <installDirectory>${project.build.directory}</installDirectory>
+                    <nodeVersion>v20.14.0</nodeVersion>
+                    <npmVersion>10.7.0</npmVersion>
+                </configuration>
+                <executions>
+                    <!-- a. Install Node + NPM (sekali, cached) -->
+                    <execution>
+                        <id>install-node-and-npm</id>
+                        <goals><goal>install-node-and-npm</goal></goals>
+                        <phase>generate-resources</phase>
+                    </execution>
+                    <!-- b. npm install -->
+                    <execution>
+                        <id>npm-install</id>
+                        <goals><goal>npm</goal></goals>
+                        <phase>generate-resources</phase>
+                        <configuration><arguments>install</arguments></configuration>
+                    </execution>
+                    <!-- c. npm run build -->
+                    <execution>
+                        <id>npm-build</id>
+                        <goals><goal>npm</goal></goals>
+                        <phase>generate-resources</phase>
+                        <configuration><arguments>run build</arguments></configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- 3. Copy hasil dist/ ke resources/static/ -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-frontend-build</id>
+                        <phase>process-resources</phase>
+                        <goals><goal>copy-resources</goal></goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}/static</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${frontend.dir}/dist</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
