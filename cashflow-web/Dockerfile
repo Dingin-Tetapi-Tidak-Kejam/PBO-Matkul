@@ -1,7 +1,7 @@
 FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY . .
-RUN mvn clean package -DskipTests -pl . -am -Dfrontend.skip=true
+RUN mvn clean package -DskipTests -Dfrontend-maven-plugin.skip=true
 
 FROM eclipse-temurin:21-jre
 WORKDIR /app
