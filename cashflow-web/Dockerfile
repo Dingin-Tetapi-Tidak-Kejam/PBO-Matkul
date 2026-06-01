@@ -1,7 +1,15 @@
+FROM node:20-alpine AS frontend
+WORKDIR /app/frontend
+COPY frontend/package*.json ./
+RUN npm install
+COPY frontend/ .
+RUN npm run build
+
 FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY . .
-RUN mvn clean package -DskipTests -Dfrontend-maven-plugin.skip=true
+COPY --from=frontend /app/frontend/dist ./frontend/dist
+RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:21-jre
 WORKDIR /app
