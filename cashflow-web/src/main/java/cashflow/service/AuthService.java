@@ -14,7 +14,7 @@ public class AuthService {
     }
 
     public User findById(Long id) {
-        return userRepository.findById(id)
+        return userRepository.findById(id.intValue())
                 .orElseThrow(() -> new RuntimeException("User tidak ditemukan"));
     }
 }
