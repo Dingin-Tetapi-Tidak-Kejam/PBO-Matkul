@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="cashflow.controller.AddExpenseController"
+      spacing="20"
+      alignment="TOP_CENTER"
+      prefWidth="500"
+      prefHeight="600"
+      style="-fx-background-color: white;">
+
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30"/>
+    </padding>
+
+    <Label text="Tambah Expense"
+           style="-fx-font-size: 24px;
+                  -fx-font-weight: bold;"/>
+
+    <TextField fx:id="amountField"
+               promptText="Masukkan Amount"
+               prefHeight="40"/>
+
+    <TextField fx:id="descriptionField"
+               promptText="Masukkan Deskripsi"
+               prefHeight="40"/>
+
+    <ComboBox fx:id="categoryComboBox"
+              promptText="Pilih Category"
+              prefHeight="40"
+              prefWidth="440"
+              onAction="#handleCategoryChange"/>
+
+    <ComboBox fx:id="subCategoryComboBox"
+              promptText="Pilih Sub Category"
+              prefHeight="40"
+              prefWidth="440"/>
+
+    <DatePicker fx:id="datePicker"
+                prefHeight="40"
+                prefWidth="440"/>
+
+    <HBox spacing="15"
+          alignment="CENTER">
+
+        <Button text="Simpan"
+                prefWidth="150"
+                prefHeight="40"
+                onAction="#handleSaveExpense"/>
+
+        <Button text="Reset"
+                prefWidth="150"
+                prefHeight="40"
+                onAction="#handleReset"/>
+    </HBox>
+</VBox>
