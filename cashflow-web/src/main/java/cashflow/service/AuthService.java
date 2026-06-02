@@ -26,9 +26,10 @@ public class AuthService {
         return userRepository.save(user);
     }
 
-    public User login(String username, String password) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Username tidak ditemukan"));
+    public User login(String usernameOrEmail, String password) {
+        User user = userRepository.findByUsername(usernameOrEmail)
+            .or(() -> userRepository.findByEmail(usernameOrEmail))
+            .orElseThrow(() -> new RuntimeException("Username tidak ditemukan"));
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new RuntimeException("Password salah");
         }

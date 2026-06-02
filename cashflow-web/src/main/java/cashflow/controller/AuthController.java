@@ -41,10 +41,8 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> req) {
         try {
-            User user = authService.login(
-                req.get("username"),
-                req.get("password")
-            );
+            String usernameOrEmail = req.get("usernameOrEmail");
+            User user = authService.login(usernameOrEmail, req.get("password"));
             String token = jwtUtil.generateToken(user);
             return ResponseEntity.ok(Map.of(
                 "token", token,
